@@ -1,0 +1,7 @@
+*.sln
+build/
+.vscode/
+compile_flags.txt
+.vs/
+test.c
+test.exe
