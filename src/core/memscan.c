@@ -74,7 +74,7 @@ static void scan_buffer(Array *address_array, uint8_t *buffer, size_t buffer_siz
         {
             ScanItem item;
             item.address = (uint8_t *)(base_address + i * jump);
-            do_if_s(array_add(address_array, &item), return);
+            fn_exit_if_s(array_add(address_array, &item));
         }
 
         buffer += jump;

@@ -16,30 +16,30 @@
 
 // _s stands for silent and _win for windows
 
-#define do_if_s(expression, action) \
+#define fn_exit_if_s(expression) \
 if(expression) \
 { \
-    action; \
+    return; \
+}
+
+#define fn_exit_if(expression, message) \
+if(expression) \
+{ \
+    log_error(message); \
+    return;\
+}
+
+#define fn_exit_if_win(expression, message) \
+if(expression) \
+{ \
+    log_win_error(message); \
+    return; \
 }
 
 #define return_if_s(expression, return_value) \
 if(expression) \
 { \
     return return_value; \
-}
-
-#define do_if(expression, message, action) \
-if(expression) \
-{ \
-    log_error(message); \
-    action; \
-}
-
-#define do_if_win(expression, message, action) \
-if(expression) \
-{ \
-    log_win_error(message); \
-    action; \
 }
 
 #define return_if(expression, message, return_value) \
@@ -54,6 +54,26 @@ if(expression) \
 { \
     log_win_error(message); \
     return return_value; \
+}
+
+#define break_if_s(expression) \
+if(expression) \
+{ \
+    break; \
+}
+
+#define break_if(expression, message) \
+if(expression) \
+{ \
+    log_error(message); \
+    break; \
+}
+
+#define break_if_win(expression, message) \
+if(expression) \
+{ \
+    log_win_error(message); \
+    break; \
 }
 
 #define jump_if(expression, message, jump_id) \
@@ -80,10 +100,4 @@ if(expression) \
 if(expression) \
 { \
     log_win_error(message); \
-}
-
-#define if_valid(valid_check, expression) \
-if(valid_check) \
-{ \
-    expression; \
 }

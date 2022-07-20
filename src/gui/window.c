@@ -172,7 +172,7 @@ int window_init(Window *window, const wchar_t *title, uint32_t width, uint32_t h
     return 0;
 
     cleanup:
-    if_valid(window_handle != NULL, log_if_win(!DestroyWindow(window_handle), "Failed to destory window"));
+    if(window_handle != NULL) {log_if_win(!DestroyWindow(window_handle), "Failed to destory window")};
     log_if_win(!UnregisterClassW(wc.lpszClassName, instance_handle), "Failed to unregister window class");
 
     return -1;
@@ -180,7 +180,7 @@ int window_init(Window *window, const wchar_t *title, uint32_t width, uint32_t h
 
 void window_destroy(Window *window)
 {
-    if_valid(window->handle != NULL, log_if_win(!DestroyWindow(window->handle), "Failed to destroy window"));
+    if(window->handle != NULL) {log_if_win(!DestroyWindow(window->handle), "Failed to destroy window")};
     log_if_win(!UnregisterClassW(window->class.lpszClassName, window->class.hInstance), "Failed to unregister window class");
     remove_window(window->handle);
     clean_struct(window);

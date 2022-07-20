@@ -23,15 +23,29 @@ int get_process_name(char *buffer, DWORD size, DWORD pid)
     if(process == NULL)
     {
         DWORD error = GetLastError();
+        
+        // If the error is error code 5 then ignore it and return.
         return_if_s(error == 5, -1);
+
         log_error("Failed to open process with pid %lu (Error Code: %lu)", pid, error);
         return -1;
     }
 
     HMODULE base_module;
     DWORD needed;
-    do_if_win(!EnumProcessModules(process, &base_module, sizeof(HMODULE), &needed), "Failed to read modules", CloseHandle(process); return -1);
-    do_if_win(!GetModuleBaseNameA(process, base_module, buffer, size), "Failed to get module name", CloseHandle(process); return -1);
+    if(!EnumProcessModules(process, &base_module, sizeof(HMODULE), &needed))
+    {
+        log_win_error("Failed to read modules");
+        CloseHandle(process);
+        return -1;
+    }
+
+    if(!GetModuleBaseNameA(process, base_module, buffer, size))
+    {
+        log_win_error("Failed to get module name");
+        CloseHandle(process);
+        return -1;
+    }
 
     CloseHandle(process);
     return 0;
@@ -45,13 +59,21 @@ int get_process_memory_usage(DWORD pid, size_t *usage)
     if(process == NULL)
     {
         DWORD error = GetLastError();
+        
+        // If the error is error code 5 then ignore it and return.
         return_if_s(error == 5, -1);
+        
         log_error("Failed to open process with pid %lu (Error Code: %lu)", pid, error);
         return -1;
     }
     
     PROCESS_MEMORY_COUNTERS pmc;
-    do_if_win(!GetProcessMemoryInfo(process, &pmc, sizeof(PROCESS_MEMORY_COUNTERS)), "Failed to get process memory information", CloseHandle(process); return -1);
+    if(!GetProcessMemoryInfo(process, &pmc, sizeof(PROCESS_MEMORY_COUNTERS)))
+    {
+        log_win_error("Failed to get process memory information");
+        CloseHandle(process);
+        return -1;
+    }
 
     *usage = pmc.WorkingSetSize;
 
@@ -75,7 +97,7 @@ int process_init(Process *process, DWORD pid)
 void process_destroy(Process *process)
 {
     assert(process != NULL);
-    do_if_s(process->handle != NULL, CloseHandle(process->handle));
+    if(process->handle != NULL) CloseHandle(process->handle);
     clean_struct(process);
 }
 

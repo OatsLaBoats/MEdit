@@ -38,7 +38,11 @@ int main(int argc, char **argv)
     set_window_data(main_window.handle, &gui);
     
     App app = {0};
-    do_if_s(app_init(&app), gui_destroy(&gui); return -1);
+    if(app_init(&app))
+    {
+        gui_destroy(&gui);
+        return -1;
+    }
 
     int result = 0;
 
@@ -51,8 +55,13 @@ int main(int argc, char **argv)
 
         if(gui_process_messages(&gui))
         {
-            do_if_s(!app_update(&app, ctx, delta), break);
-            do_if_s(gui_render(&gui, nk_rgb(30,30,30)), result = -1; break);
+            break_if_s(!app_update(&app, ctx, delta));
+            
+            if(gui_render(&gui, nk_rgb(30,30,30)))
+            {
+                result = -1;
+                break;
+            }
         }
 
         double frame_end = get_elapsed_milliseconds();

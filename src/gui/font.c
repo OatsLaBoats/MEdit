@@ -39,8 +39,8 @@ int font_init(Font *font, const char *name, int32_t size)
     return 0;
     
     cleanup:
-    if_valid(hfont != NULL, DeleteObject(hfont));
-    if_valid(hdc != NULL, DeleteDC(hdc));
+    if(hfont != NULL) DeleteObject(hfont);
+    if(hdc != NULL) DeleteDC(hdc);
 
     return -1;
 }
@@ -51,8 +51,8 @@ void font_destroy(Font *font)
     assert(font->handle != NULL);
     assert(font->dc != NULL);
 
-    if_valid(font->handle != NULL, DeleteObject(font->handle));
-    if_valid(font->dc != NULL, DeleteDC(font->dc));
+    if(font->handle != NULL) DeleteObject(font->handle);
+    if(font->dc != NULL) DeleteDC(font->dc);
     clean_struct(font);
 }
 

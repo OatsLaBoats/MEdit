@@ -32,7 +32,7 @@ LRESULT gui_proc(HWND window, UINT message, WPARAM wparam, LPARAM lparam)
             gui->window->width = width;
             gui->window->height = height;
 
-            do_if_s(renderer_resize(gui->renderer, width, height), g_medit_error = true);
+            if(renderer_resize(gui->renderer, width, height)) g_medit_error = true;
         } break;
 
         case WM_KEYDOWN:
@@ -244,7 +244,7 @@ static void clipboard_paste_callback(nk_handle usr, struct nk_text_edit *edit)
     (void)usr;
     int size = 0;
     Char8 *contents = get_clipboard(&size);
-    do_if_s(contents == NULL, return);
+    fn_exit_if_s(contents == NULL);
     log_if(!nk_textedit_paste(edit, (char *)contents, size), "Failed to paste text");
     free(contents);
 }
@@ -334,19 +334,19 @@ int gui_render(Gui *gui, struct nk_color color)
             case NK_COMMAND_SCISSOR:
             {
                 const struct nk_command_scissor *c = (const struct nk_command_scissor *)cmd;
-                do_if_s(render_clipping_region(renderer, c->x, c->y, c->w, c->h), result = -1);
+                if(render_clipping_region(renderer, c->x, c->y, c->w, c->h)) result = -1;
             } break;
 
             case NK_COMMAND_LINE:
             {
                 const struct nk_command_line *c = (const struct nk_command_line *)cmd;
-                do_if_s(render_line(renderer, c->begin.x, c->begin.y, c->end.x, c->end.y, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_line(renderer, c->begin.x, c->begin.y, c->end.x, c->end.y, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_RECT:
             {
                 const struct nk_command_rect *c = (const struct nk_command_rect *)cmd;
-                do_if_s(render_rect(renderer, c->x, c->y, c->w, c->h, c->rounding, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_rect(renderer, c->x, c->y, c->w, c->h, c->rounding, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_RECT_FILLED:
@@ -358,7 +358,7 @@ int gui_render(Gui *gui, struct nk_color color)
             case NK_COMMAND_CIRCLE:
             {
                 const struct nk_command_circle *c = (const struct nk_command_circle *)cmd;
-                do_if_s(render_circle(renderer, c->x, c->y, c->w, c->h, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_circle(renderer, c->x, c->y, c->w, c->h, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_CIRCLE_FILLED:
@@ -370,7 +370,7 @@ int gui_render(Gui *gui, struct nk_color color)
             case NK_COMMAND_TRIANGLE:
             {
                 const struct nk_command_triangle *c = (const struct nk_command_triangle *)cmd;
-                do_if_s(render_triangle(renderer, c->a.x, c->a.y, c->b.x, c->b.y, c->c.x, c->c.y, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_triangle(renderer, c->a.x, c->a.y, c->b.x, c->b.y, c->c.x, c->c.y, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_TRIANGLE_FILLED:
@@ -382,7 +382,7 @@ int gui_render(Gui *gui, struct nk_color color)
             case NK_COMMAND_POLYGON:
             {
                 const struct nk_command_polygon *c = (const struct nk_command_polygon *)cmd;
-                do_if_s(render_polygon(renderer, (short *)c->points, c->point_count, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_polygon(renderer, (short *)c->points, c->point_count, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_POLYGON_FILLED:
@@ -394,14 +394,14 @@ int gui_render(Gui *gui, struct nk_color color)
             case NK_COMMAND_POLYLINE:
             {
                 const struct nk_command_polyline *c = (const struct nk_command_polyline *)cmd;
-                do_if_s(render_polyline(renderer, (short *)c->points, c->point_count, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_polyline(renderer, (short *)c->points, c->point_count, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_TEXT:
             {
                 const struct nk_command_text *c = (const struct nk_command_text *)cmd;
-                do_if_s(render_text(renderer, c->font->userdata.ptr, c->x, c->y, c->w, c->h, c->string, c->length, convert_color(c->background), convert_color(c->foreground)),
-                        result = -1);
+                if(render_text(renderer, c->font->userdata.ptr, c->x, c->y, c->w, c->h, c->string, c->length, convert_color(c->background), convert_color(c->foreground)))
+                    result = -1;
             } break;
 
             case NK_COMMAND_CURVE:
@@ -413,7 +413,7 @@ int gui_render(Gui *gui, struct nk_color color)
                 int16_t p3[2] = {c->ctrl[1].x, c->ctrl[1].y};
                 int16_t p4[2] = {c->end.x, c->end.y};
 
-                do_if_s(render_curve(renderer, p1, p2, p3, p4, c->line_thickness, convert_color(c->color)), result = -1);
+                if(render_curve(renderer, p1, p2, p3, p4, c->line_thickness, convert_color(c->color))) result = -1;
             } break;
 
             case NK_COMMAND_RECT_MULTI_COLOR:
@@ -425,7 +425,7 @@ int gui_render(Gui *gui, struct nk_color color)
             case NK_COMMAND_IMAGE:
             {
                 const struct nk_command_image *c = (const struct nk_command_image *)cmd;
-                do_if_s(render_image(renderer, c->x, c->y, c->w, c->h, (HBITMAP)c->img.handle.ptr), result = -1);
+                if(render_image(renderer, c->x, c->y, c->w, c->h, (HBITMAP)c->img.handle.ptr)) result = -1;
             } break;
 
             case NK_COMMAND_ARC:

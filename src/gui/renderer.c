@@ -32,18 +32,18 @@ int renderer_init(Renderer *renderer, Window *window)
     return 0;
 
     cleanup:
-    if_valid(bitmap != NULL, DeleteObject(bitmap));
-    if_valid(memory_dc != NULL, DeleteDC(memory_dc));
-    if_valid(window_dc != NULL, ReleaseDC(window->handle, window_dc));
+    if(bitmap != NULL) DeleteObject(bitmap);
+    if(memory_dc != NULL) DeleteDC(memory_dc);
+    if(window_dc != NULL) ReleaseDC(window->handle, window_dc);
 
     return -1;
 }
 
 void renderer_destroy(Renderer *renderer)
 {
-    if_valid(renderer->bitmap != NULL, DeleteObject(renderer->bitmap));
-    if_valid(renderer->mdc != NULL, DeleteDC(renderer->mdc));
-    if_valid(renderer->wdc != NULL, ReleaseDC(renderer->window, renderer->wdc));
+    if(renderer->bitmap != NULL) DeleteObject(renderer->bitmap);
+    if(renderer->mdc != NULL) DeleteDC(renderer->mdc);
+    if(renderer->wdc != NULL) ReleaseDC(renderer->window, renderer->wdc);
     clean_struct(renderer);
 }
 
