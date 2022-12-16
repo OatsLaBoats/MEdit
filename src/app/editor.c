@@ -257,8 +257,11 @@ static void edt_add_button(App *app, struct nk_context *ctx)
         }
 
         EditorItem item = {0};
-        do_if_s(editor_item_init(&item, app->edt.name_buffer, address, type, data_size), return);
-        do_if_s(array_add(&app->edt.item_array, &item), free(item.data_buffer); free(item.input_buffer));
+        if(editor_item_init(&item, app->edt.name_buffer, address, type, data_size)) return;
+        if(array_add(&app->edt.item_array, &item)) {
+            free(item.data_buffer); 
+            free(item.input_buffer);
+        }
 
         app->edt.address_buffer[0] = '\0';
         app->edt.name_buffer[0] = '\0';
@@ -466,7 +469,10 @@ void edt_update(App *app, struct nk_context *ctx)
             MemoryAddress *address = array_get(items, i);
             EditorItem item = {0}; 
             editor_item_init(&item, (Char8 *)"", address->address, address->data_type, address->data_size);
-            do_if_s(array_add(&app->edt.item_array, &item), free(item.data_buffer); free(item.input_buffer));
+            if(array_add(&app->edt.item_array, &item)) {
+                free(item.data_buffer); 
+                free(item.input_buffer);
+            }
         }
     }
     
