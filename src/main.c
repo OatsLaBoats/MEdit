@@ -14,7 +14,7 @@ bool g_medit_error = false;
 bool g_app_is_running = true;
 
 int main(int argc, char **argv)
-{
+{  
     (void)argc;
     (void)argv;
 
