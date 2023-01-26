@@ -4,21 +4,26 @@ import subprocess
 
 
 def build():
-    builder = Builder("MEdit", build_type=BuildType.DEBUG)
+    arg = sys.argv[1] if len(sys.argv) == 2 else ""
 
-    if len(sys.argv) == 2:
-        if sys.argv[1] == "clean":
-            builder.clean_all()
-            return
+    build_type = BuildType.DEBUG
+    if arg == "release":
+        build_type = BuildType.RELEASE_SMALL
+                    
+    builder = Builder("MEdit", build_type=build_type, cores = 8)
 
-        if sys.argv[1] == "run":
-            subprocess.run(["./build/debug/MEdit.exe"])
-            return
+    if arg == "clean":
+        builder.clean_all()
+        return
+
+    if arg == "run":
+        subprocess.run(["./build/debug/MEdit.exe"])
+        return
 
     language = Language(
         {".c"}, 
-        DependencyScannerC(), 
-        CompilerClangC([
+        DependencyScanner_C(), 
+        Compiler_Clang([
             "-Iexternal/nuklear/include", 
             "-Wno-unused-command-line-argument", 
             "-Wno-gnu-zero-variadic-macro-arguments",
